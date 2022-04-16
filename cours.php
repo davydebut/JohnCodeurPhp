@@ -61,17 +61,36 @@
     // mais si apres le 3 fois 6 ca fait 18 si j'enleve ce 18 à 20 il reste
     // 2; dans ce cas l'operateur modulo m'affichera 2)
 
-    $x = 5;
-    $y = 2;
-
+    // $x = 5;
+    // $y = 2;
     // echo $x ** $y; // Puissance 
 
-    echo $x;
 
+    // Operateur stricte (qui pose une question et qui répond à une certaine condition)
 
+    // $age = 25;
+    // $boisson = ($age > 18)? "biere" : "eau";
 
+    // echo $boisson
 
+    // Operateur avec PHP 7 NEW !
 
+    // $bleu = "Bleu";
+    // // question est-ce que le bleu est défini ?
+    // $maCouleur = $bleu ?? $orange ?? $rouge ?? "Pas de couleur";
+
+    // echo $maCouleur;
+
+    // Operateur de comparaison
+
+    $x = 10;
+    $y = 2;
+ 
+    // spaceship
+
+    echo $x <=> $y; // soit 1 soit 0 soit -1
+
+    
 
 
 
