@@ -25,7 +25,7 @@
     AddOneAndEcho();
     AddOneAndEcho(); */
 
-    use function PHPSTORM_META\map;
+    // use function PHPSTORM_META\map;
 
     ?>
 
