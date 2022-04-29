@@ -1,25 +1,77 @@
 <?php
 
 $firstname = $name = $email = $phone = $message = "";
+$firstnameError = $nameError = $emailError = $phoneError = $messageError = "";
+$isSucces = false;
+$emailTo = "spanudavy@gmail.com";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") 
-{
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $firstname = verifyInput($_POST['firstname']);
     $name = verifyInput($_POST['name']);
     $email = verifyInput($_POST['email']);
     $phone = verifyInput($_POST['phone']);
     $message = verifyInput($_POST['message']);
+    $isSucces = true;
+    $emailText = "";
+
+    if (empty($firstname)) {
+        $firstnameError = "Je veux connaitre ton prenom !";
+        $isSucces = false;
+    } else {
+        $emailText .= "Firstname: $firstname\n";
+    }
+    if (empty($name)) {
+        $nameError = "Et oui je veux tout savoir. Même ton nom !";
+        $isSucces = false;
+    } else {
+        $emailText .= "Name: $name\n";
+    }
+
+    if (!isEmail($email)) {
+        $emailError = "T'essaies de me rouler ? C'est pas un email ça !";
+        $isSucces = false;
+    } else {
+        $emailText .= "Email: $email\n";
+    }
+    if (!isPhone($phone)) {
+        $phoneError = "Que des chiffres et des espaces, stp...";
+        $isSucces = false;
+    } else {
+        $emailText .= "Phone: $phone\n";
+    }
+    if (empty($message)) {
+        $messageError = "Qu'est-ce que tu veux me dire ?";
+        $isSucces = false;
+    } else {
+        $emailText .= "Message: $message\n";
+    }
+    if ($isSucces) {
+        // Envoie de l'email
+        $headers = "From: $firstname $name <$email>\r\nReply-To: $email";
+        mail($emailTo, "Un message de votre site", $emailText, $headers);
+        $firstname = $name = $email = $phone = $message = "";
+    }
+}
+
+function isPhone($var)
+{
+    return preg_match("/^[0-9 ]*$/", $var);
+}
+
+function isEmail($var)
+{
+    return filter_var($var, FILTER_VALIDATE_EMAIL);
 }
 
 function verifyInput($var)
 {
     // Supprime les espaces (ou d'autres caractères) en début et fin de chaîne trim()
     $var = trim($var);
-    
+
     $var = stripslashes($var); // Supprime les antislashs
 
     // Convertit les caractères spéciaux en entités HTML
-    $var = htmlspecialchars($var); 
+    $var = htmlspecialchars($var);
     return $var;
 }
 
@@ -53,27 +105,27 @@ function verifyInput($var)
                         <div class="col-md-6">
                             <label for="firstname">Prénom<span class="blue"> *</span></label>
                             <input type="text" id="firstname" name="firstname" class="form-control" placeholder="Votre prénom" value="<?php echo $firstname; ?>">
-                            <p class="comments">Message d'erreur</p>
+                            <p class="comments"><?php echo $firstnameError; ?></p>
                         </div>
                         <div class="col-md-6">
                             <label for="name">Nom<span class="blue"> *</span></label>
                             <input type="text" id="name" name="name" class="form-control" placeholder="Votre nom" value="<?php echo $name; ?>">
-                            <p class="comments">Message d'erreur</p>
+                            <p class="comments"><?php echo $nameError; ?></p>
                         </div>
                         <div class="col-md-6">
                             <label for="email">Email<span class="blue"> *</span></label>
-                            <input type="text" id="email" name="email" class="form-control" placeholder="Votre email" value="<?php echo $email; ?>">
-                            <p class="comments">Message d'erreur</p>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="Votre email" value="<?php echo $email; ?>">
+                            <p class="comments"><?php echo $emailError; ?></p>
                         </div>
                         <div class="col-md-6">
                             <label for="phone">Téléphone</label>
-                            <input type="text" id="phone" name="phone" class="form-control" placeholder="Votre téléphone" value="<?php echo $phone; ?>">
-                            <p class="comments">Message d'erreur</p>
+                            <input type="tel" id="phone" name="phone" class="form-control" placeholder="Votre téléphone" value="<?php echo $phone; ?>">
+                            <p class="comments"><?php echo $phoneError; ?></p>
                         </div>
                         <div class="col-md-12">
                             <label for="message">Message<span class="blue"> *</span></label>
                             <textarea name="message" id="message" class="form-control" rows="4" placeholder="Votre message"><?php echo $message; ?></textarea>
-                            <p class="comments">Message d'erreur</p>
+                            <p class="comments"><?php echo $messageError; ?></p>
                         </div>
                         <div class="col-md-12">
                             <p class="blue"><strong>* Ces informations sont requises</strong></p>
@@ -82,7 +134,8 @@ function verifyInput($var)
                             <input type="submit" class="button1" value="Envoyer">
                         </div>
                     </div>
-                    <p class="thank-you">Votre message à bien été envoyé. Merci de m'avoir contacté :)</p>
+                    <p class="thank-you" style="display:<?php if ($isSucces) echo 'block';
+                                                        else echo 'none'; ?>;">Votre message à bien été envoyé. Merci de m'avoir contacté :)</p>
                 </form>
             </div>
         </div>
