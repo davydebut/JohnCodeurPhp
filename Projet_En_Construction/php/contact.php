@@ -1,78 +1,76 @@
 <?php
 
-$firstname = $name = $email = $phone = $message = "";
-$firstnameError = $nameError = $emailError = $phoneError = $messageError = "";
-$isSucces = false;
+$array = array("firstname" => "", "name" => "", "email" => "", "phone" => "", "message" => "", "firstnameError" => "", "nameError" => "", "emailError" => "", "phoneError" => "", "messageError" => "", "isSuccess" => false);
+
 $emailTo = "spanudavy@gmail.com";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $firstname = verifyInput($_POST['firstname']);
-    $name = verifyInput($_POST['name']);
-    $email = verifyInput($_POST['email']);
-    $phone = verifyInput($_POST['phone']);
-    $message = verifyInput($_POST['message']);
-    $isSucces = true;
+    $array["firstname"] = verifyInput($_POST['firstname']);
+    $array["name"] = verifyInput($_POST['name']);
+    $array["email"] = verifyInput($_POST['email']);
+    $array["phone"] = verifyInput($_POST['phone']);
+    $array["message"] = verifyInput($_POST['message']);
+    $array["isSuccess"] = true;
     $emailText = "";
 
-    if (empty($firstname)) {
-        $firstnameError = "Je veux connaitre ton prenom !";
-        $isSucces = false;
+    if (empty($array["firstname"])) {
+        $array["firstnameError"] = "Je veux connaitre ton prenom !";
+        $array["isSuccess"] = false;
     } else {
-        $emailText .= "Firstname: $firstname\n";
+        $emailText .= "Firstname: {$array["firstname"]}\n";
     }
-    if (empty($name)) {
-        $nameError = "Et oui je veux tout savoir. Même ton nom !";
-        $isSucces = false;
+    if (empty($array["name"])) {
+        $array["nameError"] = "Et oui je veux tout savoir. Même ton nom !";
+        $array["isSuccess"] = false;
     } else {
-        $emailText .= "Name: $name\n";
+        $emailText .= "Name: {$array["name"]}\n";
     }
 
-    if (!isEmail($email)) {
-        $emailError = "T'essaies de me rouler ? C'est pas un email ça !";
-        $isSucces = false;
+    if (!isEmail($array["email"])) {
+        $array["emailError"] = "T'essaies de me rouler ? C'est pas un email ça !";
+        $array["isSuccess"] = false;
     } else {
-        $emailText .= "Email: $email\n";
+        $emailText .= "Email: {$array["email"]}\n";
     }
-    if (!isPhone($phone)) {
-        $phoneError = "Que des chiffres et des espaces, stp...";
-        $isSucces = false;
+    if (!isPhone($array["phone"])) {
+        $array["phoneerror"] = "Que des chiffres et des espaces, stp...";
+        $array["isSuccess"] = false;
     } else {
-        $emailText .= "Phone: $phone\n";
+        $emailText .= "Phone: {$array["phone"]}\n";
     }
-    if (empty($message)) {
-        $messageError = "Qu'est-ce que tu veux me dire ?";
-        $isSucces = false;
+    if (empty($array["message"])) {
+        $array["messageError"] = "Qu'est-ce que tu veux me dire ?";
+        $array["isSuccess"] = false;
     } else {
-        $emailText .= "Message: $message\n";
+        $emailText .= "Message: {$array["message"]}\n";
     }
-    if ($isSucces) {
+    if ($array["isSuccess"]) {
         // Envoie de l'email
-        $headers = "From: $firstname $name <$email>\r\nReply-To: $email";
+        $headers = "From: {$array["firstname"]} {$array["name"]} <{$array["email"]}>\r\nReply-To: {$array["email"]}";
         mail($emailTo, "Un message de votre site", $emailText, $headers);
-        $firstname = $name = $email = $phone = $message = "";
     }
+
+    echo json_encode($array);
 }
 
-function isPhone($var)
+function isPhone($phone)
 {
-    return preg_match("/^[0-9 ]*$/", $var);
+    return preg_match("/^[0-9 ]*$/", $phone);
 }
 
-function isEmail($var)
+function isEmail($email)
 {
-    return filter_var($var, FILTER_VALIDATE_EMAIL);
+    return filter_var($email, FILTER_VALIDATE_EMAIL);
 }
 
-function verifyInput($var)
+function verifyInput($data)
 {
     // Supprime les espaces (ou d'autres caractères) en début et fin de chaîne trim()
-    $var = trim($var);
+    $data = trim($data);
 
-    $var = stripslashes($var); // Supprime les antislashs
+    $data = stripslashes($data); // Supprime les antislashs
 
     // Convertit les caractères spéciaux en entités HTML
-    $var = htmlspecialchars($var);
-    return $var;
+    $data = htmlspecialchars($data);
+    return $data;
 }
-
-?>
